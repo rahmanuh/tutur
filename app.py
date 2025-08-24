@@ -24,7 +24,8 @@ def load_user(email):
 @login_manager.request_loader
 def request_loader(request):
     email = request.form.get('email')
-    if email not in users:
+    password = request.form.get('password')
+    if (email not in users) or (password != users[email]['password']):
         return None
     user = User()
     user.id = email
@@ -35,14 +36,15 @@ def login():
     if flask.request.method == 'GET':
         return '''
                 <form action='login' method='POST'>
-                    <input type='text' name='user_id' id='email' placeholder='email'/>
+                    <input type='text' name='email' id='email' placeholder='email'/>
                     <input type='password' name='password' id='password' placeholder='password'/>
                     <input type='submit' name='submit'/>
                 </form>
                '''
     email = flask.request.form.get('email')
+    password = flask.request.form.get('password')
 
-    if email in users and flask.request.form.get('password') == users[email]['password']:
+    if (email in users) and (password == users[email]['password']):
         user = User()
         user.id = email
         flask_login.login_user(user)
@@ -70,4 +72,4 @@ def hello_world():  # put application's code here
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
