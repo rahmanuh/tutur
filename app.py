@@ -1,8 +1,17 @@
 import flask
 import flask_login
+import os
+from config import Config, DevelopmentConfig, ProductionConfig
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = flask.Flask(__name__)
-app.secret_key = 'my super secret key'
+app.config.from_object(Config)
+if os.environ.get('FLASK_ENV') == 'production':
+    app.config.from_object(ProductionConfig)
+else:
+    app.config.from_object(DevelopmentConfig)
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
